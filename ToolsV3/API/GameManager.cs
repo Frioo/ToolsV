@@ -20,6 +20,7 @@ namespace ToolsV3
         public string InstallFolder { get; }
         public string PatchVersion { get; }
         public string Language { get; }
+        public string CommandlinePath { get; }
         public bool IsSteam { get; }
         public bool IsModded { get; }
         public List<Mod> Mods { get; }
@@ -53,20 +54,30 @@ namespace ToolsV3
             }
             FileVersionInfo GTAFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
             this.PatchVersion = GTAFileVersionInfo.ProductVersion;
-            Utils.Log("Patch version: " + PatchVersion);
             this.Language = GTAFileVersionInfo.Language;
-            Utils.Log("Language: " + Language);
+            if (File.Exists(this.InstallFolder + @"\commandline.txt"))
+            {
+                this.CommandlinePath = this.InstallFolder + @"\commandline.txt";
+            }
+            else
+            {
+                File.Create(this.InstallFolder + @"\commandline.txt");
+                this.CommandlinePath = this.CommandlinePath + @"\commandline.txt";
+                Utils.Log("Commandline.txt doesn't exitst, creating...");
+            }
             this.IsModded = Directory.Exists(this.InstallFolder) && Directory.Exists(this.InstallFolder + @"\mods") ? Directory.GetFiles(this.InstallFolder + @"\mods").Length != 0 : false;
             this.Mods = GetMods();
-            Utils.Log("Mods found: " + Mods.Count);
             this.ModdedRPFs = GetModdedRPFs();
-            Utils.Log("RPF mods: " + ModdedRPFs.Count);
             if (!IsModded && this.Mods.Count != 0 || this.ModdedRPFs.Count != 0)
             {
                 this.IsModded = true;
             }
             this.GameProperties = GetGameProperties();
             s.Stop();
+            Utils.Log("Patch version: " + PatchVersion);
+            Utils.Log("Language: " + Language);
+            Utils.Log("Mods found: " + Mods.Count);
+            Utils.Log("RPF mods: " + ModdedRPFs.Count);
             Utils.Log("Game installation initialized in " + Math.Round(s.Elapsed.TotalMilliseconds / 1000, 3) + " seconds");
             s.Reset();
         }

@@ -19,21 +19,34 @@ namespace ToolsV3
 {
     public partial class FlagsWindow : MetroWindow
     {
-        private GameManager manager;
+        private GameManager gameManager;
+        private CommandlineManager cmdManager;
         private ObservableCollection<Flag> flags = new ObservableCollection<Flag>();
+        private List<Flag> enabledFlags = new List<Flag>();
 
         public FlagsWindow(GameManager m)
         {
             InitializeComponent();
-            manager = m;
+            gameManager = m;
+            cmdManager = new CommandlineManager(m);
             Setup();
         }
 
         private void Setup()
         {
-            foreach (Flag f in GetAllFlags())
+            // add elements to the datagrid
+            List<Flag> allFlags = cmdManager.GetAllFlags();
+            List<Flag> enabledFlags = cmdManager.GetCommandlineArguments();
+            for (int i = 0; i < allFlags.Count; i++)
             {
-                flags.Add(f);
+                for (int j = 0; i < enabledFlags.Count; i++)
+                {
+                    if (allFlags[i].FlagCode.Equals(enabledFlags[i].FlagCode))
+                    {
+                        allFlags[i].Enabled = true;
+                    }
+                }
+                flags.Add(allFlags[i]);
             }
             FlagsDataGrid.DataContext = flags;
         }
@@ -44,31 +57,34 @@ namespace ToolsV3
             if (dg.SelectedIndex != -1)
             {
                 Flag selected = dg.SelectedItem as Flag;
+                if (!selected.Enabled && enabledFlags.Contains(selected))
+                {
+                    enabledFlags.Remove(selected);
+                }
+                else if (selected.Enabled && !enabledFlags.Contains(selected))
+                {
+                    enabledFlags.Add(selected);
+                }
             }
         }
 
-        private List<Flag> GetAllFlags()
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            List<Flag> flags = new List<Flag>();
-            flags.Add(new Flag("-verify", "verifies game files integrity and checks for updates"));
-            flags.Add(new Flag("-safemode", "starts the game with minimal settings but doesn't save them"));
-            flags.Add(new Flag("-ignoreprofile", "ignores current profile settings"));
-            flags.Add(new Flag("-useMinimumSettings", "starts the game with minimal settings"));
-            flags.Add(new Flag("-useAutoSettings", "game uses automatic settings"));
-            flags.Add(new Flag("-DX10", "forces DirectX 10.0"));
-            flags.Add(new Flag("-DX10_1", "forces DirectX 10.1"));
-            flags.Add(new Flag("-DX11", "forces DirectX 11.0"));
-            flags.Add(new Flag("-noChunkedDownload", "forces downloading all updates at once instead of parts"));
-            flags.Add(new Flag("-benchmark", "runs a system performance test"));
-            flags.Add(new Flag("-goStraightToMP", "automatically loads online mode"));
-            flags.Add(new Flag("-StraightIntoFreemode", "load GTA online freemode"));
-            flags.Add(new Flag("-windowed", "forces the game to run in a window"));
-            flags.Add(new Flag("-fullscreen", "forces fullscreen mode"));
-            flags.Add(new Flag("-borderless", "hides window borders"));
-            flags.Add(new Flag("-disallowResizeWindow", "locks window size"));
-            // TODO: add language switcher
+            cmdManager.SetCommandlineArguments(enabledFlags);
+        }
 
-            return flags;
+        public List<Flag> GetEnabledFlags()
+        {
+            List<Flag> res = new List<Flag>();
+            List<Flag> allFlags = cmdManager.GetAllFlags();
+            for (int i = 0; i < allFlags.Count; i++)
+            {
+                if (allFlags[i].Enabled)
+                {
+                    res.Add(allFlags[i]);
+                }
+            }
+            return res;
         }
     }
 }

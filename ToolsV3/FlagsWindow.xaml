@@ -8,7 +8,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:metro="http://schemas.microsoft.com/xps/2005/06"
         mc:Ignorable="d"
-        Title="Flags" Height="360" Width="640">
+        Title="Flags" Height="360" Width="640" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
