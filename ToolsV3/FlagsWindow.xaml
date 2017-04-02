@@ -1,0 +1,30 @@
+﻿<Controls:MetroWindow x:Class="ToolsV3.FlagsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolsV3"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:metro="http://schemas.microsoft.com/xps/2005/06"
+        mc:Ignorable="d"
+        Title="Flags" Height="360" Width="640">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <metro:DataGrid x:Name="FlagsDataGrid" ItemsSource="{Binding}" TargetUpdated="FlagsDataGrid_TargetUpdated"
+                        Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="False">
+            <metro:DataGrid.Columns>
+                <metro:DataGridTextColumn x:Name="FlagColumn" Header="Flag" Binding="{Binding FlagCode}" IsReadOnly="True" Width="0.5*"/>
+                <metro:DataGridTextColumn x:Name="DescriptionColumn" Header="Description" Binding="{Binding Description}" IsReadOnly="True" Width="*"/>
+                <metro:DataGridCheckBoxColumn x:Name="EnabledColumn" Header="Enabled" Binding="{Binding Enabled, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" Width="0.3*"/>
+            </metro:DataGrid.Columns>
+        </metro:DataGrid>
+    </Grid>
+</Controls:MetroWindow>
