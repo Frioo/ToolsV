@@ -1,0 +1,64 @@
+[Changelog]
+
+Version 3.0.0
+* Complete visual overhaul
+* Complete backend rewrite (way more stable, functional, extensible)
+
+[Changelogs for older releases below, not applicable to 3.x+]
+
+Version 2.2.3
+* Updated main window
+* Updated game edition display
+* Updated toolstip items order
+* Updated changelog window
+* Improved program launch speed
+* Fixed shortcuts not enabling/disabling the mods for singleplayer
+* Fixed bypass intro not working with auto-close after launch
+* Fixed other bugs
+
+Version 2.2.2
+* Added intro bypass launch option
+* Added changelog viewer
+* Updated mod manager
+* Updated shortcut creator
+* Updated migration tool downloader
+* Updated credits
+* Updated status bar
+* Fixed bugs
+
+Version 2.2.1
+* Updated update tool
+* Fixed self-update
+* Fixed updater not downloading
+* Fixed label text when GTA not found
+* Fixed links (sorry, using GDrive instead of FTP server right now)
+
+Version 2.2.0
+* Added mod manager
+* Added self-updating
+* Added unexpected crash handling
+* Updated settings window
+* Improved program speed
+* Fixed bugs
+
+Version 2.1.0
+* ScriptHookV checker on startup can now be toggled
+* Added exit after game launch option (AKA stealth mode)
+* Added update button in settings menu
+* Updated shortcut icon
+* Updated "about" message
+* Fixed "normal" game launch shortcut
+* Fixed patch version retrieve for steam edition of GTA
+* Fixed shortcuts not running the game
+
+Version 2.0.2
+* Added full support for steam edition of GTA! 
+* Game version is now shown 
+* Added shortcut creation tool 
+* Updated migration tool
+* Fixed ScriptHookV checker 
+* Fixed GTA Online launch 
+* Fixed crash when commandline.txt didn't exist 
+
+v1.0.0.1 
+* Initial release
