@@ -7,7 +7,10 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="ToolsV 3" Height="405" Width="720" ResizeMode="CanResizeWithGrip" ShowIconOnTitleBar="True" Icon="./Resources/favicon.ico">
+                      
+        Title="ToolsV 3" Height="405" Width="720" ResizeMode="CanResizeWithGrip" ShowIconOnTitleBar="True"
+        Icon="./Resources/favicon.ico" WindowStartupLocation="CenterScreen"
+        BorderBrush="CornflowerBlue" BorderThickness="1">
     <Window.Resources>
         <ResourceDictionary>
             <Style x:Key="CenteredIcon" TargetType="iconPacks:PackIconModern">
@@ -16,6 +19,11 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button x:Name="DonateButton" Click="DonateButton_Click" Content="Donate" ToolTip="Visit Patreon page and make a donation"/>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -34,13 +42,20 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem x:Name="itemModManager" Header="Mod manager" Click="ItemModManager_Click">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconModern Kind="App" Style="{StaticResource CenteredIcon}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator></Separator>
                 <MenuItem x:Name="itemSettings" Header="Settings" Click="ItemSettings_Click">
                     <MenuItem.Icon>
                         <iconPacks:PackIconModern Kind="Settings" Style="{StaticResource CenteredIcon}"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="_Tools"></MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem x:Name="itemAbout" Header="About" Click="ItemAbout_Click">
                     <MenuItem.Icon>
@@ -81,20 +96,21 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="radioNormal" IsChecked="True" Grid.Row="0" Checked="HandleLaunchModeChange">Normal</RadioButton>
-                    <RadioButton x:Name="radioSingleplayerWithMods" Grid.Row="1" Checked="HandleLaunchModeChange">Singleplayer (with mods)</RadioButton>
-                    <RadioButton x:Name="radioSingleplayerNoMods" Grid.Row="2" Checked="HandleLaunchModeChange">Singleplayer (without mods)</RadioButton>
-                    <RadioButton x:Name="radioOnline" Grid.Row="3" Checked="HandleLaunchModeChange">Online (without mods)</RadioButton>
+                    <RadioButton x:Name="NormalRadio" IsChecked="True" Grid.Row="0" Checked="HandleLaunchModeChange">Normal</RadioButton>
+                    <RadioButton x:Name="SingleplayerWithModsRadio" Grid.Row="1" Checked="HandleLaunchModeChange">Singleplayer (with mods)</RadioButton>
+                    <RadioButton x:Name="SingleplayerNoModsRadio" Grid.Row="2" Checked="HandleLaunchModeChange">Singleplayer (without mods)</RadioButton>
+                    <RadioButton x:Name="OnlineRadio" Grid.Row="3" Checked="HandleLaunchModeChange">Online (without mods)</RadioButton>
 
-                    <CheckBox x:Name="chkVerify" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">Verify files</CheckBox>
-                    <CheckBox x:Name="chkSafe" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">Safe mode</CheckBox>
-                    <CheckBox x:Name="chkSPOffline" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">Singleplayer offline</CheckBox>
-                    <CheckBox x:Name="chkMPFreemode" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">Multiplayer freemode</CheckBox>
+                    <CheckBox x:Name="VerifyCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">Verify files</CheckBox>
+                    <CheckBox x:Name="SafeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">Safe mode</CheckBox>
+                    <CheckBox x:Name="SPOfflineCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">Singleplayer offline</CheckBox>
+                    <CheckBox x:Name="MPFreemodeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">Multiplayer freemode</CheckBox>
                     <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8">
-                        <Hyperlink x:Name="linkShowAllFlags" Click="linkShowAllFlags_Click">
+                        <Hyperlink x:Name="ShowAllFlagsLink" Click="ShowAllFlagsLink_Click">
                             <TextBlock>Show all flags</TextBlock>
                         </Hyperlink>
                     </TextBlock>
+                    <Controls:Tile x:Name="LaunchGameTile" Title="Launch game" Grid.Row="0" Grid.Column="2" Width="200" Height="110" Grid.RowSpan="4" Click="LaunchGameTile_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>

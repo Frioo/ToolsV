@@ -9,12 +9,18 @@ namespace ToolsV3
     public class Mod
     {
         public string Filename { get; }
-        public string Path { get; }
+        public bool IsEnabled { get; set; }
 
-        public Mod(string path, string gamePath)
+        public Mod(string filename, bool enabled)
         {
-            this.Filename = path.Replace(gamePath, String.Empty);
-            this.Path = path;
+            this.Filename = filename;
+            this.IsEnabled = enabled;
+        }
+
+        public Mod(string filePath, string installPath, bool enabled)
+        {
+            this.Filename = filePath.Replace(installPath + @"\", String.Empty);
+            this.IsEnabled = enabled;
         }
     }
 }

@@ -14,9 +14,15 @@ namespace ToolsV3.API
         public CommandlineManager(GameManager manager)
         {
             this.Manager = manager;
+            RemoveMultiplayerFlag();
         }
 
-        public void SetCommandLineArguments(Flag flag)
+        public void RemoveMultiplayerFlag()
+        {
+            RemoveCommandlineArgument("-goStraightToMP");
+        }
+
+        public void SetCommandLineArgument(Flag flag)
         {
             File.AppendAllLines(Manager.CommandlinePath, new List<string> { flag.FlagCode }.AsEnumerable());
         }
@@ -28,14 +34,28 @@ namespace ToolsV3.API
             {
                 flags.Add(enabledFlags[i].FlagCode);
             }
+            File.WriteAllText(Manager.CommandlinePath, String.Empty);
             File.AppendAllLines(Manager.CommandlinePath, flags.AsEnumerable());
+        }
+
+        public void RemoveCommandlineArgument(string flagCode)
+        {
+            List<Flag> flags = GetCommandlineArguments();
+            for (int i = 0; i < flags.Count; i++)
+            {
+                if (flags[i].FlagCode.Equals(flagCode))
+                {
+                    flags.RemoveAt(i);
+                }
+            }
+            SetCommandlineArguments(flags);
         }
 
         public List<Flag> GetCommandlineArguments()
         {
             List<Flag> res = new List<Flag>();
             List<Flag> all = this.GetAllFlags();
-            string path = Manager.InstallFolder + @"/commandline.txt";
+            string path = Manager.InstallFolder + @"\commandline.txt";
             if (!File.Exists(path))
             {
                 File.Create(path);
@@ -52,6 +72,7 @@ namespace ToolsV3.API
 
                 foreach (var f in query)
                 {
+                    f.IsEnabled = true;
                     res.Add(f);
                     Utils.Log(f.FlagCode);
                 }
@@ -62,8 +83,8 @@ namespace ToolsV3.API
         public List<Flag> GetAllFlags()
         {
             List<Flag> flags = new List<Flag>();
-            flags.Add(new Flag("-verify", "verifies game files integrity and checks for updates"));
-            flags.Add(new Flag("-safemode", "starts the game with minimal settings but doesn't save them"));
+            //flags.Add(new Flag("-verify", "verifies game files integrity and checks for updates"));
+            //flags.Add(new Flag("-safemode", "starts the game with minimal settings but doesn't save them"));
             flags.Add(new Flag("-ignoreprofile", "ignores current profile settings"));
             flags.Add(new Flag("-useMinimumSettings", "starts the game with minimal settings"));
             flags.Add(new Flag("-useAutoSettings", "game uses automatic settings"));
@@ -73,7 +94,7 @@ namespace ToolsV3.API
             flags.Add(new Flag("-noChunkedDownload", "forces downloading all updates at once instead of parts"));
             flags.Add(new Flag("-benchmark", "runs a system performance test"));
             flags.Add(new Flag("-goStraightToMP", "automatically loads online mode"));
-            flags.Add(new Flag("-StraightIntoFreemode", "load GTA online freemode"));
+            //flags.Add(new Flag("-StraightIntoFreemode", "load GTA online freemode"));
             flags.Add(new Flag("-windowed", "forces the game to run in a window"));
             flags.Add(new Flag("-fullscreen", "forces fullscreen mode"));
             flags.Add(new Flag("-borderless", "hides window borders"));

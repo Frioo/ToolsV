@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,8 +22,10 @@ namespace ToolsV3
     {
         private GameManager gameManager;
         private CommandlineManager cmdManager;
-        private ObservableCollection<Flag> flags = new ObservableCollection<Flag>();
-        private List<Flag> enabledFlags = new List<Flag>();
+        private ObservableCollection<Flag> flags = new ObservableCollection<Flag>(); // the collection we will edit and use as data source.
+        private List<Flag> savedFlags = new List<Flag>(); // list of flags already saved in commandline.txt file
+        private List<Flag> pendingFlags = new List<Flag>(); // list of flags pending to be saved
+        private List<Flag> availableFlags = new List<Flag>(); // list of all flags (used for comparison)
 
         public FlagsWindow(GameManager m)
         {
@@ -35,18 +38,19 @@ namespace ToolsV3
         private void Setup()
         {
             // add elements to the datagrid
-            List<Flag> allFlags = cmdManager.GetAllFlags();
-            List<Flag> enabledFlags = cmdManager.GetCommandlineArguments();
-            for (int i = 0; i < allFlags.Count; i++)
+            this.availableFlags = cmdManager.GetAllFlags();
+            this.savedFlags = cmdManager.GetCommandlineArguments();
+            for (int i = 0; i < availableFlags.Count; i++)
             {
-                for (int j = 0; i < enabledFlags.Count; i++)
+                Flag f = availableFlags[i];
+                for (int j = 0; j < savedFlags.Count; j++)
                 {
-                    if (allFlags[i].FlagCode.Equals(enabledFlags[i].FlagCode))
+                    if (savedFlags[j].FlagCode.Equals(availableFlags[i].FlagCode))
                     {
-                        allFlags[i].Enabled = true;
+                        f = savedFlags[j];
                     }
                 }
-                flags.Add(allFlags[i]);
+                flags.Add(f);
             }
             FlagsDataGrid.DataContext = flags;
         }
@@ -57,34 +61,32 @@ namespace ToolsV3
             if (dg.SelectedIndex != -1)
             {
                 Flag selected = dg.SelectedItem as Flag;
-                if (!selected.Enabled && enabledFlags.Contains(selected))
+                Utils.Log("Flag updated: " + selected.FlagCode);
+                Utils.Log("Enabled: " + selected.IsEnabled);
+                if (!selected.IsEnabled && savedFlags.Contains(selected))
                 {
-                    enabledFlags.Remove(selected);
+                    pendingFlags.Remove(selected);
                 }
-                else if (selected.Enabled && !enabledFlags.Contains(selected))
+                else if (selected.IsEnabled && !savedFlags.Contains(selected) && !pendingFlags.Contains(selected))
                 {
-                    enabledFlags.Add(selected);
+                    pendingFlags.Add(selected);
                 }
             }
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            cmdManager.SetCommandlineArguments(enabledFlags);
-        }
-
-        public List<Flag> GetEnabledFlags()
-        {
-            List<Flag> res = new List<Flag>();
-            List<Flag> allFlags = cmdManager.GetAllFlags();
-            for (int i = 0; i < allFlags.Count; i++)
+            Utils.Log("Saving flags to " + gameManager.CommandlinePath);
+            List<Flag> final = new List<Flag>();
+            List<Flag> currentFlags = flags.ToList<Flag>();
+            for (int i = 0; i < currentFlags.Count; i++)
             {
-                if (allFlags[i].Enabled)
+                if (currentFlags[i].IsEnabled)
                 {
-                    res.Add(allFlags[i]);
+                    final.Add(currentFlags[i]);
                 }
             }
-            return res;
+            cmdManager.SetCommandlineArguments(final);
         }
     }
 }
