@@ -20,7 +20,7 @@ namespace ToolsV3.API
         private static readonly string CHANGELOG_URL = @"https://pastebin.com/raw/RvxX60E4";
         private static readonly string GITHUB_API_URL = @"https://api.github.com/";
         private static readonly string GITHUB_API_RATE_LIMIT_URL = GITHUB_API_URL + @"rate_limit";
-        private static readonly string GITHUB_REPO_URL = @"repos/Frioo/ToolsV";
+        private static readonly string GITHUB_REPO_URL = @"repos/Frioo/ToolsV/";
         private static readonly string GITHUB_TAGS_URL = GITHUB_API_URL + GITHUB_REPO_URL + @"tags";
         private static readonly string GITHUB_LATEST_RELEASE_URL = GITHUB_API_URL + GITHUB_REPO_URL + @"releases/latest";
         private static string GITHUB_RELEASE_BY_TAG(string tag)
