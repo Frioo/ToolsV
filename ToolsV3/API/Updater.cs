@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
+using System.Web;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -15,15 +15,16 @@ namespace ToolsV3.API
 {
     public static class Updater
     {
-        public static readonly string VERSION_TAG = @"v3.0.0-ALPHA";
+        public static readonly string VERSION_TAG = @"v3.0.0";
         private static readonly string CHANGELOG_URL = @"https://pastebin.com/raw/RvxX60E4";
         private static readonly string GITHUB_API_URL = @"https://api.github.com/";
+        private static readonly string GITHUB_API_RATE_LIMIT_URL = GITHUB_API_URL + @"rate_limit";
         private static readonly string GITHUB_REPO_URL = @"repos/Frioo/ToolsV";
         private static readonly string GITHUB_TAGS_URL = GITHUB_API_URL + GITHUB_REPO_URL + @"tags";
         private static readonly string GITHUB_LATEST_RELEASE_URL = GITHUB_API_URL + GITHUB_REPO_URL + @"releases/latest";
         private static string GITHUB_RELEASE_BY_TAG(string tag)
         {
-            return GITHUB_API_URL + GITHUB_REPO_URL + @"releases/tags/" + tag;
+            return UrlWithQuery(GITHUB_API_URL + GITHUB_REPO_URL + @"releases/tags/" + tag);
         }
         private static readonly string UPDATE_FILE_ENDPOINT = @"\ToolsV.exe";
         private static MetroWindow view { get; set; }
@@ -42,10 +43,12 @@ namespace ToolsV3.API
             string newFilePath = await DownloadLatestExecutable();
             // Extract Updater from resources
             File.WriteAllBytes(Utils.UpdaterFilePath, Properties.Resources.Updater);
-            ProcessStartInfo info = new ProcessStartInfo();
-            info.FileName = Utils.UpdaterFilePath;
-            info.Arguments = $"-o {Utils.ExecutableFilePath} -n {newFilePath}";
-            info.Verb = "runas";
+            ProcessStartInfo info = new ProcessStartInfo
+            {
+                FileName = Utils.UpdaterFilePath,
+                Arguments = $"-o {Utils.ExecutableFilePath} -n {newFilePath}",
+                Verb = "runas"
+            };
             Process.Start(info);
         }
 
@@ -146,12 +149,12 @@ namespace ToolsV3.API
 
         public static async Task<string> GetLatestTag()
         {
+            await CheckApiRate();
             string latestTag = "";
             try
             {
                 Utils.Log("Updater: get latest tag");
-                string json = await client.GetStringAsync(GITHUB_TAGS_URL);
-                JArray tags = JArray.Parse(await client.GetStringAsync(GITHUB_TAGS_URL));
+                JArray tags = JArray.Parse(await client.GetStringAsync(UrlWithQuery(GITHUB_TAGS_URL)));
                 latestTag = tags[0].ToObject<JObject>().GetValue("name").ToString();
                 Utils.Log($"latest tag: {latestTag}");
             }
@@ -163,9 +166,29 @@ namespace ToolsV3.API
             return latestTag;
         }
 
+        public static async Task<string> CheckApiRate()
+        {
+            Utils.Log("Updater: check API rate");
+            JObject rate = JObject.Parse(await client.GetStringAsync(UrlWithQuery(GITHUB_API_RATE_LIMIT_URL)));
+            string limit = rate["resources"]["core"]["limit"].ToString();
+            string remaining = rate["resources"]["core"]["remaining"].ToString();
+            Utils.Log($"API rate: {remaining}/{limit}");
+            return $"{remaining}/{limit}";
+        }
+
         private static int ExtractVersion(string tag)
         {
             return Int32.Parse(string.Join(string.Empty, Regex.Matches(tag, @"\d+").OfType<Match>().Select(m => m.Value)));
+        }
+
+        private static string UrlWithQuery(string url)
+        {
+            var builder = new UriBuilder(url);
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            query["client_id"] = Authorization.Client.Id;
+            query["client_secret"] = Authorization.Client.Secret;
+            builder.Query = query.ToString();
+            return builder.ToString();
         }
 
         #region dialogs

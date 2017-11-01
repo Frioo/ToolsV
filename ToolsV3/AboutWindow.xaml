@@ -6,7 +6,7 @@
         xmlns:IconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:ToolsV3"
         mc:Ignorable="d"
-        Title="About" Height="340" Width="250" Icon="./Resources/favicon.ico" WindowStartupLocation="CenterScreen">
+        Title="About" Height="355" Width="250" Icon="./Resources/favicon.ico" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <Style x:Key="CenteredIcon" TargetType="IconPacks:PackIconModern">
@@ -16,8 +16,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <StackPanel HorizontalAlignment="Center">
-        <Label HorizontalAlignment="Center" FontSize="48" FontFamily="Code Bold">ToolsV</Label>
-        <Label HorizontalAlignment="Center" FontSize="24" Margin="0 -24 0 0">by Frio</Label>
+        <Label HorizontalAlignment="Center" FontSize="48" FontFamily="Segoe UI Semilight">ToolsV</Label>
+        <Label HorizontalAlignment="Center" FontSize="24" Margin="0 -24 0 0" FontFamily="Segoe UI Light">by Frio</Label>
         <GroupBox Header="3rd party software used">
             <ScrollViewer Height="50">
                 <StackPanel HorizontalAlignment="Left">

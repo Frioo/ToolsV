@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsV3", "ToolsV3\ToolsV3.csproj", "{BEA7DD6F-3B57-4317-BF05-28C2B6E4EAC6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5D3ABA24-3856-494F-A77A-7834D1E1D1EA} = {5D3ABA24-3856-494F-A77A-7834D1E1D1EA}
+		{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE} = {5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{5D3ABA24-3856-494F-A77A-7834D1E1D1EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authorization", "Authorization\Authorization.csproj", "{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,10 @@ Global
 		{5D3ABA24-3856-494F-A77A-7834D1E1D1EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D3ABA24-3856-494F-A77A-7834D1E1D1EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D3ABA24-3856-494F-A77A-7834D1E1D1EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5413ADB6-C9EC-4F06-AF9E-07B54EFED7BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
