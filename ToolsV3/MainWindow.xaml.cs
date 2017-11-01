@@ -33,8 +33,7 @@ namespace ToolsV3
             // throw error if GTA is not installed
             if (IsAnyNullOrEmpty(Manager))
             {
-                MessageBox.Show("GTA V does not appear to be installed (missing registry keys)\n" +
-                    "ToolsV will quit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowInitErrorAndExit();
                 Environment.Exit(0);
             }
 
@@ -191,6 +190,13 @@ namespace ToolsV3
                     Utils.Log($"Could not delete updater executable!{Environment.NewLine}{ex.Message}");
                 }
             }
+        }
+
+        public static void ShowInitErrorAndExit()
+        {
+            MessageBox.Show($"GTA V does not appear to be installed.{Environment.NewLine}If you are certain it is, please review GTA V registry keys on your system.",
+                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.Exit(0);
         }
         #endregion
 

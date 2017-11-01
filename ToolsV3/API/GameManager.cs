@@ -30,8 +30,16 @@ namespace ToolsV3
             s.Start();
             Utils.Log("Initializing GTA manager...");
 
-            string registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", String.Empty).ToString();
-            if (registryInstallPath == String.Empty)
+            string registryInstallPath = String.Empty;
+            try
+            {
+                registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", String.Empty).ToString();
+            }
+            catch(Exception ex)
+            {
+                MainWindow.ShowInitErrorAndExit();
+            }
+            if (registryInstallPath == String.Empty || registryInstallPath == null)
             {
                 this.IsSteam = true;
                 this.InstallFolder = GetSteamGTAInstallationFolder();
