@@ -10,12 +10,13 @@ using System.Net.Http;
 using System.Web;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace ToolsV3.API
 {
     public static class Updater
     {
-        public static readonly string VERSION_TAG = @"v3.0.0";
+        public static readonly string VERSION_TAG = AssemblyName.GetAssemblyName(Utils.ExecutableFilePath).Version.ToString();
         private static readonly string CHANGELOG_URL = @"https://pastebin.com/raw/RvxX60E4";
         private static readonly string GITHUB_API_URL = @"https://api.github.com/";
         private static readonly string GITHUB_API_RATE_LIMIT_URL = GITHUB_API_URL + @"rate_limit";
@@ -35,6 +36,7 @@ namespace ToolsV3.API
         public static void Initialize()
         {
             client.DefaultRequestHeaders.Add("User-Agent", "ToolsV");
+            Utils.Log($"ToolsV version: {VERSION_TAG}");
         }
 
         public static async Task Update()
