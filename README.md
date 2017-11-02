@@ -23,7 +23,11 @@ It automaticaly check for updates and download them.
   Example: launch online, with safe mode and file verification enabled
 * Automatic ScriptHookV checker
   * Warning when version is not compatible
-  
+
+### Screenshots
+#### Main window
+<img src="https://i.imgur.com/UZL5IhW.png"/>
+
 ### Releases
 Releases will be available on the GitHub releases page, when published.  
 Right now ToolsV does not have any official binaries.
