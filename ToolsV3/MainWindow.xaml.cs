@@ -232,7 +232,7 @@ namespace ToolsV3
                 Manager.DisableMods();
                 CommandlineManager.SetCommandLineArgument(new Flag("-goStraightToMP", String.Empty));
             }
-            //manager.StartGame();
+            Manager.StartGame();
         }
 
         private void QuickFlagChangeCheckbox_Checked(object sender, RoutedEventArgs e)
