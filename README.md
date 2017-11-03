@@ -1,6 +1,6 @@
 # ToolsV 3
 ToolsV is the ultimate standalone launcher, mod manager and toolpack for GTA V.  
-It automaticaly check for updates and download them.  
+It features an automatic updater so you won't miss any additions. 
 
 ### Highlighted features (not everything is implemented, yet)
 * Pre-configured game start modes
