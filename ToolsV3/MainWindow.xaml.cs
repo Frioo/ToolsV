@@ -44,20 +44,17 @@ namespace ToolsV3
             }
             GameInfoDataGrid.DataContext = GameProperties;
             CommandlineManager = new CommandlineManager(Manager);
-            DeleteUpdater();
             SetCheckboxStates();
             Utils.Log("MainWindow: setup complete");
         }
 
         private async void CheckForUpdateAsync()
         {
-            if (!await Updater.GetIsLatest())
-            {
-                string latest = await Updater.GetLatestTag();
-                await Updater.ShowUpdateAvailableDialog(this, latest);
-                Utils.Log("Current version: " + Updater.VERSION_TAG);
-                Utils.Log("Latest: " + latest);
-            }
+            if (await Updater.GetIsLatest()) return;
+            var latest = await Updater.GetLatestTag();
+            await Updater.ShowUpdateAvailableDialog(this, latest);
+            Utils.Log("Current version: " + Updater.VERSION_TAG);
+            Utils.Log("Latest: " + latest);
         }
 
         public void HandleLaunchModeChange(object sender, RoutedEventArgs e)
@@ -172,23 +169,6 @@ namespace ToolsV3
             {
                 Directory.CreateDirectory(Manager.InstallFolder + @"\mods");
                 Process.Start(Manager.InstallFolder + @"\mods");
-            }
-        }
-
-        private void DeleteUpdater()
-        {
-            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (File.Exists(currentPath + @"\Updater.exe"))
-            {
-                try
-                {
-                    File.Delete(currentPath + @"\Updater.exe");
-                    Utils.Log("Deleted updater executable!");
-                }
-                catch (Exception ex)
-                {
-                    Utils.Log($"Could not delete updater executable!{Environment.NewLine}{ex.Message}");
-                }
             }
         }
 

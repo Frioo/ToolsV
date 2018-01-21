@@ -39,66 +39,9 @@ namespace ToolsV3.API
             Utils.Log($"ToolsV version: {VERSION_TAG}");
         }
 
-        public static async Task Update()
+        public static void OpenDownloadSites()
         {
-            Utils.Log("Updater: update");
-            string newFilePath = await DownloadLatestExecutable();
-            // Extract Updater from resources
-            File.WriteAllBytes(Utils.UpdaterFilePath, Properties.Resources.Updater);
-            ProcessStartInfo info = new ProcessStartInfo
-            {
-                FileName = Utils.UpdaterFilePath,
-                Arguments = $"-o {Utils.ExecutableFilePath} -n {newFilePath}",
-                Verb = "runas"
-            };
-            Process.Start(info);
-        }
-
-        public static async Task<string> DownloadLatestExecutable()
-        {
-            JObject root = JObject.Parse(await client.GetStringAsync(GITHUB_RELEASE_BY_TAG(await GetLatestTag())));
-            string fileUrl = (string)root["assets"][0]["browser_download_url"];
-            string currentDir = Utils.GetExecutableDirectory();
-            Utils.Log($"downloading latest executable...{Environment.NewLine}url: {fileUrl}");
-            try
-            {
-                using (var downloader = new WebClient())
-                {
-                    var controller = await view.ShowProgressAsync("Downloading latest release", $"This shouldn't take too long.{Environment.NewLine}");
-                    controller.Minimum = 0;
-                    controller.Maximum = 100;
-                    controller.SetCancelable(false);
-                    downloader.DownloadFileCompleted += (sender, e) => Downloader_DownloadFileCompleted(sender, e, controller);
-                    downloader.DownloadProgressChanged += (sender, e) => Downloader_DownloadProgressChanged(sender, e, controller);
-                    await downloader.DownloadFileTaskAsync(new Uri(fileUrl), currentDir + UPDATE_FILE_ENDPOINT);
-                }
-            }
-            catch (Exception ex)
-            {
-                Utils.Log("download failed");
-                Utils.Log(ex.Message);
-                await ShowUpdateFailedDialog(view);
-            }
-            return currentDir + UPDATE_FILE_ENDPOINT;
-        }
-
-        private static void Downloader_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e, ProgressDialogController controller)
-        {
-            controller.SetMessage($"This shouldn't take too long.{Environment.NewLine}File size: {e.TotalBytesToReceive / 1024 / 1024}MB");
-            controller.SetProgress(e.ProgressPercentage);
-        }
-
-        private static async void Downloader_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e, ProgressDialogController controller)
-        {
-            await controller.CloseAsync();
-            if (e.Cancelled)
-            {
-                Utils.Log("download canceled");
-            }
-            else
-            {
-                Utils.Log("download completed!");
-            }
+            Process.Start(@"https://github.com/Frioo/ToolsV/releases");
         }
 
         public static async Task<string> GetChangelog()
@@ -196,14 +139,14 @@ namespace ToolsV3.API
         #region dialogs
         public static async Task ShowUpdateAvailableDialog(MetroWindow window, string latestVersion)
         {
-            MessageDialogResult res = await window.ShowMessageAsync("Update available", "A newer version of ToolsV is available, would you like to download it?\n" +
+            var res = await window.ShowMessageAsync("Update available", "A newer version of ToolsV is available, would you like to download it?\n" +
                 "Current version: " + Updater.VERSION_TAG +
                 "\nLatest version: " + latestVersion, MessageDialogStyle.AffirmativeAndNegative);
             if (res == MessageDialogResult.Affirmative)
             {
                 view = window;
-                Utils.Log("Update dialog: engaging automated self-update");
-                await Update();
+                Utils.Log("Update dialog: opening download pages...");
+                OpenDownloadSites();
             }
             else
             {
@@ -213,14 +156,8 @@ namespace ToolsV3.API
 
         public static async Task ShowNoUpdateAvailableDialog(MetroWindow window)
         {
-            MessageDialogResult res = await window.ShowMessageAsync("No updates found", "You have the latest version of ToolsV.\n" +
+            var res = await window.ShowMessageAsync("No updates found", "You have the latest version of ToolsV.\n" +
                 "Current version: " + Updater.VERSION_TAG, MessageDialogStyle.Affirmative);
-        }
-
-        public static async Task ShowUpdateFailedDialog(MetroWindow window)
-        {
-            MessageDialogResult res = await window.ShowMessageAsync("Update failed :(", "Something went wrong, you can try downloading the latest version manually.",
-                MessageDialogStyle.Affirmative);
         }
         #endregion
     }
