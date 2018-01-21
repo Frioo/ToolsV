@@ -26,20 +26,20 @@ namespace ToolsV3
 
         public GameManager()
         {
-            Stopwatch s = new Stopwatch();
+            var s = new Stopwatch();
             s.Start();
             Utils.Log("Initializing GTA manager...");
 
-            string registryInstallPath = String.Empty;
+            var registryInstallPath = string.Empty;
             try
             {
-                registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", String.Empty).ToString();
+                registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", string.Empty).ToString();
             }
             catch(Exception ex)
             {
                 MainWindow.ShowInitErrorAndExit();
             }
-            if (registryInstallPath == String.Empty || registryInstallPath == null)
+            if (registryInstallPath == string.Empty)
             {
                 this.IsSteam = true;
                 this.InstallFolder = GetSteamGTAInstallationFolder();
@@ -58,9 +58,9 @@ namespace ToolsV3
             {
                 return;
             }
-            FileVersionInfo GTAFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
-            this.PatchVersion = GTAFileVersionInfo.ProductVersion;
-            this.Language = GTAFileVersionInfo.Language;
+            var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
+            this.PatchVersion = gtaFileVersionInfo.ProductVersion;
+            this.Language = gtaFileVersionInfo.Language;
 
             if (File.Exists(this.InstallFolder + @"\commandline.txt"))
             {
@@ -80,7 +80,14 @@ namespace ToolsV3
             }
             this.ModStorageFolder = this.InstallFolder + Utils.MOD_STORAGE_FOLDER_ENDPOINT;
 
-            this.IsModded = Directory.Exists(this.InstallFolder) && Directory.Exists(this.InstallFolder + @"\mods") ? Directory.GetFiles(this.InstallFolder + @"\mods").Length != 0 : false;
+            this.IsModded = Directory.Exists(this.InstallFolder) && Directory.Exists(this.InstallFolder + @"\mods") && Directory.GetFiles(this.InstallFolder + @"\mods").Length != 0;
+            if (Directory.Exists(this.InstallFolder + Utils.MOD_FOLDER_ENDPOINT))
+            {
+                if (GetMods(false).Count > 0)
+                {
+                    this.IsModded = true;
+                }
+            }
             if (!IsModded && GetMods(false).Count != 0 || GetModdedRPFs().Count != 0)
             {
                 this.IsModded = true;
