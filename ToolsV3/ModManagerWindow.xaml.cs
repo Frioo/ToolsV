@@ -8,50 +8,48 @@ namespace ToolsV3
 {
     public partial class ModManagerWindow : MetroWindow
     {
-        private GameManager gameManager;
-        private ObservableCollection<Mod> mods = new ObservableCollection<Mod>();
-        private List<Mod> modsToDisable = new List<Mod>();
-        private List<Mod> modsToEnable = new List<Mod>();
+        private readonly GameManager _gameManager;
+        private readonly ObservableCollection<Mod> _mods = new ObservableCollection<Mod>();
+        private readonly List<Mod> _modsToDisable = new List<Mod>();
+        private readonly List<Mod> _modsToEnable = new List<Mod>();
 
         public ModManagerWindow(GameManager m)
         {
             InitializeComponent();
-            gameManager = m;
+            _gameManager = m;
             Setup();
         }
 
         private void Setup()
         {
-            List<Mod> allMods = gameManager.GetMods(true);
-            for (int i = 0; i < allMods.Count; i++) mods.Add(allMods[i]);
-            ModsDataGrid.DataContext = mods;
+            var allMods = _gameManager.GetMods(true);
+            for (int i = 0; i < allMods.Count; i++) _mods.Add(allMods[i]);
+            ModsDataGrid.DataContext = _mods;
         }
 
         private void ModWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Utils.Log("Saving mods...");
-            gameManager.DisableMods(modsToDisable);
-            gameManager.EnableMods(modsToEnable);
+            _gameManager.DisableMods(_modsToDisable);
+            _gameManager.EnableMods(_modsToEnable);
         }
 
         private void ModsDataGrid_TargetUpdated(object sender, DataTransferEventArgs e)
         {
-            DataGrid dg = sender as DataGrid;
-            if (dg.SelectedIndex != -1)
+            var dg = sender as DataGrid;
+            if (dg != null && dg.SelectedIndex == -1) return;
+            if (!(dg.SelectedItem is Mod selected)) return;
+            Utils.Log("Mod updated: " + selected.Filename);
+            Utils.Log("Enabled: " + selected.IsEnabled);
+            if (!selected.IsEnabled && !_modsToDisable.Contains(selected))
             {
-                Mod selected = dg.SelectedItem as Mod;
-                Utils.Log("Mod updated: " + selected.Filename);
-                Utils.Log("Enabled: " + selected.IsEnabled);
-                if (!selected.IsEnabled && !modsToDisable.Contains(selected))
-                {
-                    if (modsToEnable.Contains(selected)) modsToEnable.Remove(selected);
-                    modsToDisable.Add(selected);
-                }
-                else if (selected.IsEnabled && !modsToEnable.Contains(selected))
-                {
-                    if (modsToDisable.Contains(selected)) modsToDisable.Remove(selected);
-                    modsToEnable.Add(selected);
-                }
+                if (_modsToEnable.Contains(selected)) _modsToEnable.Remove(selected);
+                _modsToDisable.Add(selected);
+            }
+            else if (selected.IsEnabled && !_modsToEnable.Contains(selected))
+            {
+                if (_modsToDisable.Contains(selected)) _modsToDisable.Remove(selected);
+                _modsToEnable.Add(selected);
             }
         }
     }
