@@ -9,7 +9,7 @@
         xmlns:metro="http://schemas.microsoft.com/xps/2005/06"
         mc:Ignorable="d"
         x:Name="ModWindow"
-        Title="Flags" Height="360" Width="640" Closing="ModWindow_Closing" WindowStartupLocation="CenterScreen" BorderBrush="CornflowerBlue" BorderThickness="1">
+        Title="Mods" Height="360" Width="640" Closing="ModWindow_Closing" WindowStartupLocation="CenterScreen" BorderBrush="CornflowerBlue" BorderThickness="1">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
