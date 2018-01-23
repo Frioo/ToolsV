@@ -9,7 +9,7 @@
         mc:Ignorable="d"
                       
         Title="ToolsV 3" Height="405" Width="720" ResizeMode="CanResizeWithGrip" ShowIconOnTitleBar="True"
-        Icon="./Resources/favicon.ico" WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="CenterScreen"
         BorderBrush="CornflowerBlue" BorderThickness="1">
     <Window.Resources>
         <ResourceDictionary>
