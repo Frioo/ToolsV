@@ -35,14 +35,14 @@ namespace ToolsV3
             {
                 registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", string.Empty).ToString();
             }
-            catch(Exception ex)
+            catch (Exception)
             {
                 MainWindow.ShowInitErrorAndExit();
             }
             if (registryInstallPath == string.Empty)
             {
                 this.IsSteam = true;
-                this.InstallFolder = GetSteamGTAInstallationFolder();
+                this.InstallFolder = GetSteamInstallationFolder();
                 Utils.Log("Game found! Edition: Steam");
                 Utils.Log("Installation folder: " + InstallFolder);
             }
@@ -88,7 +88,7 @@ namespace ToolsV3
                     this.IsModded = true;
                 }
             }
-            if (!IsModded && GetMods(false).Count != 0 || GetModdedRPFs().Count != 0)
+            if (!IsModded && GetMods(false).Count != 0 || GetModdedRpfs().Count != 0)
             {
                 this.IsModded = true;
             }
@@ -99,7 +99,7 @@ namespace ToolsV3
             Utils.Log("Language: " + Language);
             Utils.Log("Enabled mods: " + GetMods(false).Count);
             Utils.Log("Total mods: " + GetMods(true).Count);
-            Utils.Log("RPF mods: " + GetModdedRPFs().Count);
+            Utils.Log("RPF mods: " + GetModdedRpfs().Count);
             Utils.Log($"Game installation initialized in {Math.Round(s.Elapsed.TotalMilliseconds / 1000, 3)} seconds");
             s.Reset();
         }
@@ -120,7 +120,7 @@ namespace ToolsV3
         public void EnableMods()
         {
             Utils.Log("Enabling all mods...");
-            List<string> files = Directory.GetFiles(this.ModStorageFolder).ToList<string>();
+            var files = Directory.GetFiles(this.ModStorageFolder).ToList<string>();
             for (int i = 0; i < files.Count; i++)
             {
                 File.Move(files[i], files[i].Replace(this.ModStorageFolder, this.InstallFolder));
@@ -133,8 +133,8 @@ namespace ToolsV3
             for (int i = 0; i < modsToEnable.Count; i++)
             {
                 Utils.Log($"moving {modsToEnable[i].Filename}");
-                string src = ModStorageFolder + @"\" + modsToEnable[i].Filename;
-                string dst = InstallFolder + @"\" + modsToEnable[i].Filename;
+                var src = ModStorageFolder + @"\" + modsToEnable[i].Filename;
+                var dst = InstallFolder + @"\" + modsToEnable[i].Filename;
                 Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
                 File.Move(src, dst);
             }
@@ -143,8 +143,8 @@ namespace ToolsV3
         public void EnableMod(Mod mod)
         {
             Utils.Log($"Enabling {mod.Filename}...");
-            string src = ModStorageFolder + @"\" + mod.Filename;
-            string dst = InstallFolder + @"\" + mod.Filename;
+            var src = ModStorageFolder + @"\" + mod.Filename;
+            var dst = InstallFolder + @"\" + mod.Filename;
             Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
             File.Move(src, dst);
         }
@@ -152,7 +152,7 @@ namespace ToolsV3
         public void DisableMods()
         {
             Utils.Log("Disabling all mods...");
-            List<Mod> mods = this.GetModFiles();
+            var mods = this.GetModFiles();
             for (int i = 0; i < mods.Count; i++)
             {
                 Utils.Log($"moving {mods[i].Filename}");
@@ -166,8 +166,8 @@ namespace ToolsV3
             for (int i = 0; i < modsToDisable.Count; i++)
             {
                 Utils.Log($"moving {modsToDisable[i].Filename}");
-                string src = InstallFolder + @"\" + modsToDisable[i].Filename;
-                string dst = ModStorageFolder + @"\" + modsToDisable[i].Filename;
+                var src = InstallFolder + @"\" + modsToDisable[i].Filename;
+                var dst = ModStorageFolder + @"\" + modsToDisable[i].Filename;
                 Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
                 File.Move(src, dst);
             }
@@ -176,23 +176,25 @@ namespace ToolsV3
         public void DisableMod(Mod mod)
         {
             Utils.Log($"Disabling {mod.Filename}...");
-            string src = InstallFolder + @"\" + mod.Filename;
-            string dst = ModStorageFolder + @"\" + mod.Filename;
+            var src = InstallFolder + @"\" + mod.Filename;
+            var dst = ModStorageFolder + @"\" + mod.Filename;
             Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
             File.Move(src, dst);
         }
 
         public List<Mod> GetMods(bool includeDisabled)
         {
-            List<Mod> mods = GetModFiles();
-            if (includeDisabled)
+            var mods = GetModFiles();
+            if (!includeDisabled) return mods;
+            var disabledModFiles = Directory.GetFiles(this.ModStorageFolder);
+            for (int i = 0; i < disabledModFiles.Length; i++)
             {
-                string[] disabledModFiles = Directory.GetFiles(this.ModStorageFolder);
-                for (int i = 0; i < disabledModFiles.Length; i++)
-                {
-                    string filename = disabledModFiles[i].Replace(this.ModStorageFolder, String.Empty);
-                    mods.Add(new Mod(disabledModFiles[i], ModStorageFolder, false));
-                }
+                var filename = disabledModFiles[i].Replace(this.ModStorageFolder, string.Empty);
+                var type = filename.Contains(".dll") && !filename.ToLower().Contains(@"scripthookv") &&
+                           !filename.ToLower().Contains(@"dsound") && !filename.ToLower().Contains(@"dinput8")
+                    ? Utils.ModType.SCRIPT
+                    : Utils.ModType.NATIVE;
+                mods.Add(new Mod(disabledModFiles[i], type, ModStorageFolder, false));
             }
 
             return mods;
@@ -200,32 +202,32 @@ namespace ToolsV3
 
         private List<Mod> GetModFiles()
         {
-            string[] files = Directory.GetFiles(this.InstallFolder);
-            List<Mod> result = new List<Mod>();
+            var files = Directory.GetFiles(this.InstallFolder);
+            var result = new List<Mod>();
             for (int i = 0; i < files.Length; i++)
             {
-                string filename = files[i].Replace(this.InstallFolder + @"\", String.Empty);
+                var filename = files[i].Replace(this.InstallFolder + @"\", String.Empty);
                 if (filename.ToLower().Contains(@".asi") || filename.ToLower().Contains(@"scripthookv.dll") || filename.ToLower().Contains("dsound") || filename.ToLower().Contains(@"dinput8.dll"))
                 {
-                    Mod mod = new Mod(files[i], this.InstallFolder, true);
+                    var mod = new Mod(files[i], Utils.ModType.NATIVE, this.InstallFolder, true);
                     result.Add(mod);
                 }
             }
             return result;
         }
 
-        private List<Mod> GetModdedRPFs()
+        private List<Mod> GetModdedRpfs()
         {
             if (IsModded)
             {
-                string[] moddedRPFPaths = Directory.GetFiles(this.InstallFolder + @"\mods");
-                List<Mod> moddedRPFList = new List<Mod>();
-                for (int i = 0; i < moddedRPFPaths.Length; i++)
+                var moddedRpfPaths = Directory.GetFiles(this.InstallFolder + @"\mods");
+                var moddedRpfList = new List<Mod>();
+                for (int i = 0; i < moddedRpfPaths.Length; i++)
                 {
-                    Mod moddedRPF = new Mod(moddedRPFPaths[i], this.InstallFolder, true);
-                    moddedRPFList.Add(moddedRPF);
+                    var moddedRpf = new Mod(moddedRpfPaths[i], Utils.ModType.RPF, this.InstallFolder, true);
+                    moddedRpfList.Add(moddedRpf);
                 }
-                return moddedRPFList;
+                return moddedRpfList;
             }
             else
             {
@@ -241,16 +243,18 @@ namespace ToolsV3
 
         private List<GameProperty> GetGameProperties()
         {
-            List<GameProperty> properties = new List<GameProperty>();
-            properties.Add(new GameProperty("Install folder", this.InstallFolder));
-            properties.Add(new GameProperty("Patch version", this.PatchVersion));
-            properties.Add(new GameProperty("Language", Language));
-            properties.Add(new GameProperty("Edition", IsSteam ? "Steam" : "Rockstar Warehouse"));
-            properties.Add(new GameProperty("Vanilla", IsModded ? "No" : "Yes"));
+            var properties = new List<GameProperty>
+            {
+                new GameProperty("Install folder", this.InstallFolder),
+                new GameProperty("Patch version", this.PatchVersion),
+                new GameProperty("Language", Language),
+                new GameProperty("Edition", IsSteam ? "Steam" : "Rockstar Warehouse"),
+                new GameProperty("Vanilla", IsModded ? "No" : "Yes")
+            };
             return properties;
         }
 
-        private string GetSteamGTAInstallationFolder()
+        private string GetSteamGameInstallationFolder()
         {
             string steamPath = GetSteamInstallationFolder();
             if (Directory.Exists(steamPath + @"\steamapps\common"))
@@ -273,31 +277,31 @@ namespace ToolsV3
                     Utils.Log(ex.Message);
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
 
-        private string GetSteamInstallationFolder()
+        private static string GetSteamInstallationFolder()
         {
-            RegistryKey steamKey = Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x86) ?? Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x64);
-            return steamKey.GetValue("InstallPath").ToString();
+            var steamKey = Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x86) ?? Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x64);
+            return steamKey?.GetValue("InstallPath").ToString() ?? string.Empty;
         }
 
         private List<string> GetSteamGameFolders()
         {
-            List<string> folders = new List<string>();
+            var folders = new List<string>();
 
-            string steamFolder = GetSteamInstallationFolder();
+            var steamFolder = GetSteamInstallationFolder();
             folders.Add(steamFolder);
 
-            string configFile = steamFolder + @"\config\config.vdf";
+            var configFile = steamFolder + @"\config\config.vdf";
 
-            Regex regex = new Regex("BaseInstallFolder[^\"]*\"\\s*\"([^\"]*)\"");
-            using (StreamReader reader = new StreamReader(configFile))
+            var regex = new Regex("BaseInstallFolder[^\"]*\"\\s*\"([^\"]*)\"");
+            using (var reader = new StreamReader(configFile))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    Match match = regex.Match(line);
+                    var match = regex.Match(line);
                     if (match.Success)
                     {
                         folders.Add(Regex.Unescape(match.Groups[1].Value));
