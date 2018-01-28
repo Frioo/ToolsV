@@ -30,7 +30,7 @@
             </ScrollViewer>
         </GroupBox>
         <GroupItem FontSize="20" HorizontalAlignment="Center">Notice</GroupItem>
-        <ScrollViewer Height="65" Margin="4 0 4 0">
+        <ScrollViewer Height="65" Margin="4 2 4 2" BorderBrush="CornflowerBlue" BorderThickness="2">
             <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Left">
             I am working on this software in my free time, and as I'm not affiliated with Rockstar Games in any way,
             I can't ensure full compatibility with all game installations. 
