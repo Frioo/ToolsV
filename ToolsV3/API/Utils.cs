@@ -41,6 +41,13 @@ namespace ToolsV3
             ONLINE = 4
         }
 
+        public enum ModType
+        {
+            NATIVE = 1,
+            SCRIPT = 2,
+            RPF = 3
+        }
+
         public static void Log(string text)
         {
             Debug.WriteLine(TAG + text);
