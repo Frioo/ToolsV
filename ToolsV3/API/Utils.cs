@@ -8,6 +8,7 @@ namespace ToolsV3
     {
         private static string TAG = @"ToolsV:Log -> ";
         public static string MOD_FOLDER_ENDPOINT = @"\mods";
+        public static string SCRIPT_FOLDER_ENDPOINT = @"\scripts";
         public static string MOD_STORAGE_FOLDER_ENDPOINT = @"\ToolsV\Mods";
         public static string ExecutableDirectory
         {

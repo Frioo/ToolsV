@@ -133,8 +133,22 @@ namespace ToolsV3
             for (int i = 0; i < modsToEnable.Count; i++)
             {
                 Utils.Log($"moving {modsToEnable[i].Filename}");
+                var mod = modsToEnable[i];
+                var dst = string.Empty;
+                switch (mod.Type)
+                {
+                    case Utils.ModType.NATIVE:
+                    {
+                        dst = InstallFolder + @"\" + mod.Filename;
+                        break;
+                    }
+                    case Utils.ModType.SCRIPT:
+                    {
+                        dst = InstallFolder + Utils.SCRIPT_FOLDER_ENDPOINT + @"\" + mod.Filename;
+                        break;
+                    }
+                }
                 var src = ModStorageFolder + @"\" + modsToEnable[i].Filename;
-                var dst = InstallFolder + @"\" + modsToEnable[i].Filename;
                 Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
                 File.Move(src, dst);
             }
@@ -166,8 +180,22 @@ namespace ToolsV3
             for (int i = 0; i < modsToDisable.Count; i++)
             {
                 Utils.Log($"moving {modsToDisable[i].Filename}");
-                var src = InstallFolder + @"\" + modsToDisable[i].Filename;
-                var dst = ModStorageFolder + @"\" + modsToDisable[i].Filename;
+                var mod = modsToDisable[i];
+                var src = string.Empty;
+                switch (mod.Type)
+                {
+                    case Utils.ModType.NATIVE:
+                    {
+                        src = InstallFolder + @"\" + mod.Filename;
+                        break;
+                    }
+                    case Utils.ModType.SCRIPT:
+                    {
+                        src = InstallFolder + Utils.SCRIPT_FOLDER_ENDPOINT + @"\" + mod.Filename;
+                        break;
+                    }
+                }
+                var dst = ModStorageFolder + @"\" + mod.Filename;
                 Utils.Log($"source: {src}{Environment.NewLine}destination: {dst}");
                 File.Move(src, dst);
             }
@@ -185,6 +213,7 @@ namespace ToolsV3
         public List<Mod> GetMods(bool includeDisabled)
         {
             var mods = GetModFiles();
+            mods.AddRange(GetScriptFiles());
             if (!includeDisabled) return mods;
             var disabledModFiles = Directory.GetFiles(this.ModStorageFolder);
             for (int i = 0; i < disabledModFiles.Length; i++)
@@ -214,6 +243,27 @@ namespace ToolsV3
                 }
             }
             return result;
+        }
+
+        private List<Mod> GetScriptFiles()
+        {
+            var res = new List<Mod>();
+            var path = this.InstallFolder + Utils.SCRIPT_FOLDER_ENDPOINT + @"\";
+            // scripts folder doesn't exist, therefore no scripts can be returned
+            if (!Directory.Exists(path)) return res;
+
+            // scripts folder exists
+            var files = Directory.GetFiles(path);
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (files[i].EndsWith("dll") || files[i].EndsWith("cs") || files[i].EndsWith("lua"))
+                {
+                    var mod = new Mod(files[i].Replace(path, string.Empty), Utils.ModType.SCRIPT, true);
+                    res.Add(mod);
+                }
+            }
+
+            return res;
         }
 
         private List<Mod> GetModdedRpfs()
