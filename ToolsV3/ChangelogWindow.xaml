@@ -11,6 +11,7 @@
         <Label DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16">
             Changelog
         </Label>
-        <TextBox x:Name="ChangelogTextBox" DockPanel.Dock="Top" IsReadOnly="True" Text="Downloading changelog..." FontFamily="Lucida Console"/>
+        <TextBox x:Name="ChangelogTextBox" DockPanel.Dock="Top"
+                 IsReadOnly="True" Text="Downloading changelog..." FontFamily="Lucida Console" VerticalScrollBarVisibility="Auto"/>
     </DockPanel>
 </Window>
