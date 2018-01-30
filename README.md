@@ -29,8 +29,8 @@ It features an automatic updater so you won't miss any additions.
 <img src="https://i.imgur.com/UZL5IhW.png"/>
 
 ### Releases
-Releases will be available on the GitHub releases page, when published.  
-Right now ToolsV does not have any official binaries.
+All releases are available on the [GitHub releases page](https://github.com/Frioo/ToolsV/releases/).  
+You can find the latest binary [here](https://github.com/Frioo/ToolsV/releases/latest).
 
 ### ToolsV 1.X/2.X
 Older versions of ToolsV are still available, but they are not stable nor optimized.  
