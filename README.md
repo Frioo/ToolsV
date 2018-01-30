@@ -26,7 +26,7 @@ It features an automatic updater so you won't miss any additions.
 
 ### Screenshots
 #### Main window
-<img src="https://i.imgur.com/UZL5IhW.png"/>
+<img src="https://i.imgur.com/FEqVF0z.png"/>
 
 ### Releases
 All releases are available on the [GitHub releases page](https://github.com/Frioo/ToolsV/releases/).  
