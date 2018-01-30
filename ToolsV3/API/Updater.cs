@@ -67,21 +67,14 @@ namespace ToolsV3.API
 
         public static async Task<bool> GetIsLatest()
         {
-            bool isLatest = true;
+            var isLatest = true;
             try
             {
                 Utils.Log("Updater: check for update");
-                string latest = await GetLatestTag();
-                isLatest = ExtractVersion(latest) <= ExtractVersion(VERSION_TAG);
-                Utils.Log(ExtractVersion(latest).ToString());
-                if (isLatest)
-                {
-                    Utils.Log("no updates found");
-                }
-                else
-                {
-                    Utils.Log("newer version is available");
-                }
+                var latest = await GetLatestTag();
+                isLatest = Utils.ExtractVersion(latest) <= Utils.ExtractVersion(VERSION_TAG);
+                Utils.Log(Utils.ExtractVersion(latest).ToString());
+                Utils.Log(isLatest ? "no updates found" : "newer version is available");
             }
             catch (Exception ex)
             {
@@ -119,11 +112,6 @@ namespace ToolsV3.API
             string remaining = rate["resources"]["core"]["remaining"].ToString();
             Utils.Log($"API rate: {remaining}/{limit}");
             return $"{remaining}/{limit}";
-        }
-
-        private static int ExtractVersion(string tag)
-        {
-            return Int32.Parse(string.Join(string.Empty, Regex.Matches(tag, @"\d+").OfType<Match>().Select(m => m.Value)));
         }
 
         private static string UrlWithQuery(string url)

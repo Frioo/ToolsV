@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace ToolsV3
 {
@@ -66,6 +68,11 @@ namespace ToolsV3
             string path = Assembly.GetEntryAssembly().Location;
             Log($"Utils: detected executable path: {path}");
             return path;
+        }
+
+        public static int ExtractVersion(string tag)
+        {
+            return int.Parse(string.Join(string.Empty, Regex.Matches(tag, @"\d+").OfType<Match>().Select(m => m.Value)));
         }
     }
 }
