@@ -27,7 +27,6 @@ namespace ToolsV3
             Core.Initialize();
             Setup();
             CheckForUpdateAsync();
-            CheckScriptHookVersion();
         }
 
         private void Setup()
@@ -64,9 +63,9 @@ namespace ToolsV3
             Utils.Log("Latest: " + latest);
         }
 
-        private async void CheckScriptHookVersion()
+        private async Task CheckScriptHookVersion()
         {
-            if (!Manager.IsScriptHookCompatible()) ShowScriptHookOutdatedWarningDialogAlt();
+            if (!Manager.IsScriptHookCompatible()) await ShowScriptHookOutdatedWarningDialog();
         }
 
         public void HandleLaunchModeChange(object sender, RoutedEventArgs e)
@@ -322,6 +321,11 @@ namespace ToolsV3
             {
                 await ShowScriptHookUpToDateDialog();
             }
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            CheckScriptHookVersion();
         }
     }
 }

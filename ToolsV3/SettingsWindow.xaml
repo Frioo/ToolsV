@@ -16,7 +16,7 @@
         </WrapPanel>
 
         <StackPanel Margin="4" VerticalAlignment="Center" IsEnabled="False">
-            <CheckBox x:Name="ScriptHookCheckbox" Margin="0, 4, 0, 4"
+            <CheckBox x:Name="ScriptHookCheckbox" Margin="0, 4, 0, 4" IsChecked="True"
                       Checked="ScriptHookCheckBox_StateChanged" Unchecked="ScriptHookCheckBox_StateChanged">
                 Check ScriptHookV version on startup
             </CheckBox>

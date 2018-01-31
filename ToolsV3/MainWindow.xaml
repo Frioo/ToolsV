@@ -10,7 +10,8 @@
                       
         Title="ToolsV 3" Height="405" Width="720" ResizeMode="CanResizeWithGrip" ShowIconOnTitleBar="True"
         WindowStartupLocation="CenterScreen"
-        BorderBrush="CornflowerBlue" BorderThickness="1">
+        BorderBrush="CornflowerBlue" BorderThickness="1"
+        Loaded="MainWindow_OnLoaded">
     <Window.Resources>
         <ResourceDictionary>
             <Style x:Key="CenteredIcon" TargetType="iconPacks:PackIconModern">
