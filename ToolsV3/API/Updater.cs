@@ -3,12 +3,8 @@ using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection;
 
@@ -28,7 +24,7 @@ namespace ToolsV3.API
             return UrlWithQuery(GITHUB_API_URL + GITHUB_REPO_URL + @"releases/tags/" + tag);
         }
         private static readonly string UPDATE_FILE_ENDPOINT = @"\ToolsV.exe";
-        private static MetroWindow view { get; set; }
+        private static MetroWindow View { get; set; }
 
         private static HttpClient client = new HttpClient();
 
@@ -132,7 +128,7 @@ namespace ToolsV3.API
                 "\nLatest version: " + latestVersion, MessageDialogStyle.AffirmativeAndNegative);
             if (res == MessageDialogResult.Affirmative)
             {
-                view = window;
+                View = window;
                 Utils.Log("Update dialog: opening download pages...");
                 OpenDownloadSites();
             }
