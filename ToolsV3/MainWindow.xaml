@@ -49,6 +49,11 @@
                         <iconPacks:PackIconModern Kind="App" Style="{StaticResource CenteredIcon}"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="itemScriptHookChecker" Header="ScriptHookV checker" Click="ItemScriptHookChecker_OnClick">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconModern Kind="ScrabbleV" Style="{StaticResource CenteredIcon}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator></Separator>
                 <MenuItem x:Name="itemSettings" Header="Settings" Click="ItemSettings_Click">
                     <MenuItem.Icon>

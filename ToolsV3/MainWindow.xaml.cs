@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace ToolsV3
             Core.Initialize();
             Setup();
             CheckForUpdateAsync();
+            CheckScriptHookVersion();
         }
 
         private void Setup()
@@ -38,13 +40,18 @@ namespace ToolsV3
             }
 
             // add game properties to the datagrid
-            foreach (GameProperty p in Manager.GameProperties)
+            foreach (var property in Manager.GameProperties)
             {
-                GameProperties.Add(p);
+                GameProperties.Add(property);
             }
             GameInfoDataGrid.DataContext = GameProperties;
             CommandlineManager = new CommandlineManager(Manager);
             SetCheckboxStates();
+            if (!Manager.IsScriptHookInstalled())
+            {
+                Utils.Log("ScriptHookV not installed, disabling menu item...");
+                itemScriptHookChecker.IsEnabled = false;
+            }
             Utils.Log("MainWindow: setup complete");
         }
 
@@ -55,6 +62,11 @@ namespace ToolsV3
             await Updater.ShowUpdateAvailableDialog(this, latest);
             Utils.Log("Current version: " + Updater.VERSION_TAG);
             Utils.Log("Latest: " + latest);
+        }
+
+        private async void CheckScriptHookVersion()
+        {
+            if (!Manager.IsScriptHookCompatible()) ShowScriptHookOutdatedWarningDialogAlt();
         }
 
         public void HandleLaunchModeChange(object sender, RoutedEventArgs e)
@@ -122,7 +134,7 @@ namespace ToolsV3
 
         #region other methods
         // check whether any field of given object is empty/null
-        bool IsAnyNullOrEmpty(object o)
+        public static bool IsAnyNullOrEmpty(object o)
         {
             foreach (PropertyInfo pi in o.GetType().GetProperties())
             {
@@ -162,9 +174,41 @@ namespace ToolsV3
             }
         }
 
+        public async Task ShowScriptHookUpToDateDialog()
+        {
+            await this.ShowMessageAsync("ScriptHookV is up-to-date",
+                $"ScriptHookV is compatible with game patch version." +
+                $"{Environment.NewLine}" +
+                $"Patch version: {Manager.PatchVersion}" +
+                $"{Environment.NewLine}" +
+                $"ScriptHookV version: {Manager.GetScriptHookVersion()}",
+                MessageDialogStyle.Affirmative);
+        }
+
+        public async Task ShowScriptHookOutdatedWarningDialog()
+        {
+            await this.ShowMessageAsync("ScriptHookV is outdated",
+                $"ScriptHookV version is not compatible with installed patch." +
+                $"{Environment.NewLine}" +
+                $"GTA patch version: {Manager.PatchVersion}" +
+                $"{Environment.NewLine}" +
+                $"ScriptHookV version: {Manager.GetScriptHookVersion()}",
+                MessageDialogStyle.Affirmative);
+        }
+
+        public void ShowScriptHookOutdatedWarningDialogAlt()
+        {
+            MessageBox.Show($"ScriptHookV is not compatible with installed game patch." +
+                            $"{Environment.NewLine}" +
+                            $"Game patch version: {Manager.PatchVersion}" +
+                            $"{Environment.NewLine}" +
+                            $"ScriptHookV version: {Manager.GetScriptHookVersion()}", "ScriptHookV is outdated",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
         public async Task ShowModsFolderErrorDialog()
         {
-            MessageDialogResult res = await this.ShowMessageAsync("Error", "Mods folder does not exist. Would you like to create one?", MessageDialogStyle.AffirmativeAndNegative);
+            var res = await this.ShowMessageAsync("Error", "Mods folder does not exist. Would you like to create one?", MessageDialogStyle.AffirmativeAndNegative);
             if (res == MessageDialogResult.Affirmative)
             {
                 Directory.CreateDirectory(Manager.InstallFolder + @"\mods");
@@ -266,6 +310,18 @@ namespace ToolsV3
         private void DonateButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.patreon.com/Frio");
+        }
+
+        private async void ItemScriptHookChecker_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!Manager.IsScriptHookCompatible())
+            {
+                await ShowScriptHookOutdatedWarningDialog();
+            }
+            else
+            {
+                await ShowScriptHookUpToDateDialog();
+            }
         }
     }
 }

@@ -59,7 +59,8 @@ namespace ToolsV3
                 return;
             }
             var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
-            this.PatchVersion = gtaFileVersionInfo.ProductVersion;
+            //this.PatchVersion = gtaFileVersionInfo.ProductVersion;
+            this.PatchVersion = "v9.99999.39";
             this.Language = gtaFileVersionInfo.Language;
 
             if (File.Exists(this.InstallFolder + @"\commandline.txt"))
@@ -286,10 +287,26 @@ namespace ToolsV3
         }
         #endregion
 
+        #region version management
+        public bool IsScriptHookInstalled()
+        {
+            return File.Exists(this.InstallFolder + @"\ScriptHookV.dll");
+        }
+
+        public string GetScriptHookVersion()
+        {
+            return !IsScriptHookInstalled() ? string.Empty : FileVersionInfo.GetVersionInfo(this.InstallFolder + @"\ScriptHookV.dll").ProductVersion;
+        }
+
         public bool IsScriptHookCompatible()
         {
-            return true;
+            if (!IsScriptHookInstalled()) return true;
+
+            var hookFilePath = this.InstallFolder + @"\ScriptHookV.dll";
+            var hookVersion = Utils.ExtractVersion(FileVersionInfo.GetVersionInfo(hookFilePath).ProductVersion);
+            return Utils.ExtractVersion(this.PatchVersion) <= hookVersion;
         }
+        #endregion
 
         private List<GameProperty> GetGameProperties()
         {
@@ -336,7 +353,7 @@ namespace ToolsV3
             return steamKey?.GetValue("InstallPath").ToString() ?? string.Empty;
         }
 
-        private List<string> GetSteamGameFolders()
+        private static List<string> GetSteamGameFolders()
         {
             var folders = new List<string>();
 
