@@ -70,6 +70,11 @@ namespace ToolsV3
             return path;
         }
 
+        public static string GetProgramVersion()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
+
         public static int ExtractVersion(string tag)
         {
             return int.Parse(string.Join(string.Empty, Regex.Matches(tag, @"\d+").OfType<Match>().Select(m => m.Value)));

@@ -21,6 +21,12 @@ namespace ToolsV3
         public AboutWindow()
         {
             InitializeComponent();
+            Setup();
+        }
+
+        private void Setup()
+        {
+            VersionLabel.Content = $"version {Utils.GetProgramVersion()}";
         }
 
         private void GitHubLink_Click(object sender, RoutedEventArgs e)
