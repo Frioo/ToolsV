@@ -59,8 +59,7 @@ namespace ToolsV3
                 return;
             }
             var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
-            //this.PatchVersion = gtaFileVersionInfo.ProductVersion;
-            this.PatchVersion = "v9.99999.39";
+            this.PatchVersion = gtaFileVersionInfo.ProductVersion;
             this.Language = gtaFileVersionInfo.Language;
 
             if (File.Exists(this.InstallFolder + @"\commandline.txt"))
