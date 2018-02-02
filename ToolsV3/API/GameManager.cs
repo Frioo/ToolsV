@@ -33,31 +33,28 @@ namespace ToolsV3
             var registryInstallPath = string.Empty;
             try
             {
+                // try to get the installation directory from registry
                 registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", string.Empty).ToString();
+                this.IsSteam = false;
+                this.InstallFolder = registryInstallPath;
             }
             catch (Exception)
             {
-                MainWindow.ShowInitErrorAndExit();
-            }
-            if (registryInstallPath == string.Empty)
-            {
+                // assume game is from steam if 1st method doesn't work
                 this.IsSteam = true;
                 this.InstallFolder = GetSteamInstallationFolder();
-                Utils.Log("Game found! Edition: Steam");
-                Utils.Log("Installation folder: " + InstallFolder);
-            }
-            else
-            {
-                this.IsSteam = false;
-                this.InstallFolder = registryInstallPath;
-                Utils.Log("Game found! Edition: Rockstar Warehouse");
-                Utils.Log("Installation folder: " + InstallFolder);
             }
 
             if (string.IsNullOrEmpty(this.InstallFolder))
             {
-                return;
+                MainWindow.ShowInitErrorAndExit();
             }
+
+            // game directory is found, all good
+            var edition = IsSteam ? "Steam" : "Rockstar Warehouse";
+            Utils.Log($"Game found! Edition: {edition}");
+            Utils.Log($"Installation folder: {InstallFolder}");
+
             var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
             this.PatchVersion = gtaFileVersionInfo.ProductVersion;
             this.Language = gtaFileVersionInfo.Language;
