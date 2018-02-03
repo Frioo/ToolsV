@@ -5,14 +5,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 using ToolsV3.API;
 
 namespace ToolsV3
 {
     public class GameManager
     {
-        private static string GTA_REGISTRY_PATH = @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V";
-        private static string STEAM_REGISTRY_PATH_x86 = @"SOFTWARE\Valve\Steam";
+        private static string GTA_REGISTRY_PATH = @"SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V";
+        private static string STEAM_REGISTRY_PATH_x86 = @"Software\Valve\Steam";
         private static string STEAM_REGISTRY_PATH_x64 = @"SOFTWARE\WOW6432Node\Valve\Steam";
 
         public string InstallFolder { get; }
@@ -30,19 +31,27 @@ namespace ToolsV3
             s.Start();
             Utils.Log("Initializing GTA manager...");
 
-            var registryInstallPath = string.Empty;
-            try
+            var gamePath = GetSteamGameInstallationFolder();
+            if (gamePath.Equals(string.Empty))
             {
-                // try to get the installation directory from registry
-                registryInstallPath = Registry.GetValue(GTA_REGISTRY_PATH, "InstallFolder", string.Empty).ToString();
-                this.IsSteam = false;
-                this.InstallFolder = registryInstallPath;
+                gamePath = GetRockstarGameInstallationFolder();
+                if (!gamePath.Equals(string.Empty))
+                {
+                    this.IsSteam = false;
+                    this.InstallFolder = gamePath;
+                }
+                else
+                {
+                    // game detection failed
+                    // TODO: prompt user to manually select directory
+                    this.IsSteam = true;
+                    this.InstallFolder = string.Empty;
+                }
             }
-            catch (Exception)
+            else
             {
-                // assume game is from steam if 1st method doesn't work
                 this.IsSteam = true;
-                this.InstallFolder = GetSteamInstallationFolder();
+                this.InstallFolder = gamePath;
             }
 
             if (string.IsNullOrEmpty(this.InstallFolder))
@@ -55,7 +64,7 @@ namespace ToolsV3
             Utils.Log($"Game found! Edition: {edition}");
             Utils.Log($"Installation folder: {InstallFolder}");
 
-            var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(registryInstallPath + @"\GTA5.exe");
+            var gtaFileVersionInfo = FileVersionInfo.GetVersionInfo(InstallFolder + @"\GTA5.exe");
             this.PatchVersion = gtaFileVersionInfo.ProductVersion;
             this.Language = gtaFileVersionInfo.Language;
 
@@ -317,46 +326,86 @@ namespace ToolsV3
             return properties;
         }
 
-        private string GetSteamGameInstallationFolder()
+        private static string GetRockstarGameInstallationFolder()
         {
-            string steamPath = GetSteamInstallationFolder();
-            if (Directory.Exists(steamPath + @"\steamapps\common"))
+            try
             {
-                Directory.CreateDirectory(steamPath + @"\steamapps\common");
+                var installFolder = Registry.LocalMachine.OpenSubKey(GTA_REGISTRY_PATH).GetValue("InstallFolder")
+                    .ToString();
+                return installFolder;
             }
-            var gameFolders = GetSteamGameFolders().Select(x => x + @"\steamapps\common");
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error xdd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return string.Empty;
+        }
+
+        private static string GetSteamGameInstallationFolder()
+        {
+            var matches = new List<string>();
+            var gameFolders = GetSteamGameFolders();
+
             foreach (var gameFolder in gameFolders)
             {
                 try
                 {
-                    var matches = Directory.GetDirectories(gameFolder, "Grand Theft Auto V");
-                    if (matches.Length >= 1)
-                    {
-                        return matches[0];
-                    }
+                    matches.AddRange(Directory.GetDirectories(gameFolder, "Grand Theft Auto V"));
                 }
-                catch (DirectoryNotFoundException ex)
+                catch (Exception ex)
                 {
-                    Utils.Log(ex.Message);
+                    // :(
+                    Utils.Log($"GameManager: GetSteamInstallationFolder -> {ex.Message}");
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
+            foreach (var match in matches)
+            {
+                if (File.Exists(match + @"\GTA5.exe"))
+                {
+                    return match;
+                }
+            }
+
             return string.Empty;
         }
 
-        private static string GetSteamInstallationFolder()
+        private static string GetSteamClientInstallationFolder()
         {
-            var steamKey = Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x86) ?? Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x64);
-            return steamKey?.GetValue("InstallPath").ToString() ?? string.Empty;
+            var steamKey32Bit = Registry.CurrentUser.OpenSubKey(STEAM_REGISTRY_PATH_x86);
+            var steamKey64Bit = Registry.LocalMachine.OpenSubKey(STEAM_REGISTRY_PATH_x64);
+
+            if (steamKey32Bit != null)
+            {
+                var path32 = steamKey32Bit.GetValue("SteamPath").ToString();
+                return path32;
+            }
+            else if (steamKey64Bit != null)
+            {
+                var path64 = steamKey64Bit.GetValue("InstallPath").ToString();
+                return path64;
+            }
+            else
+            {
+                Utils.Log($"GameManager: GetSteamClientInstallationFolder -> steam is not installed");
+                MessageBox.Show("Steam does not appear to be installed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+            }
+
+            return string.Empty;
         }
 
         private static List<string> GetSteamGameFolders()
         {
-            var folders = new List<string>();
-
-            var steamFolder = GetSteamInstallationFolder();
-            folders.Add(steamFolder);
-
+            var steamFolder = GetSteamClientInstallationFolder();
             var configFile = steamFolder + @"\config\config.vdf";
+            var res = new List<string>();
+            if (Directory.Exists(steamFolder + @"/steamapps/common"))
+            {
+                res.Add(steamFolder + @"/steamapps/common");
+            }
 
             var regex = new Regex("BaseInstallFolder[^\"]*\"\\s*\"([^\"]*)\"");
             using (var reader = new StreamReader(configFile))
@@ -367,11 +416,11 @@ namespace ToolsV3
                     var match = regex.Match(line);
                     if (match.Success)
                     {
-                        folders.Add(Regex.Unescape(match.Groups[1].Value));
+                        res.Add(Regex.Unescape(match.Groups[1].Value) + @"/steamapps/common");
                     }
                 }
             }
-            return folders;
+            return res;
         }
     }
 }
