@@ -28,6 +28,14 @@ namespace ToolsV3
             CheckForUpdateAsync();
         }
 
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.CheckScriptHookOnStartup)
+            {
+                CheckScriptHookVersion();
+            }
+        }
+
         private void Setup()
         {
             // throw error if GTA is not installed
@@ -255,6 +263,10 @@ namespace ToolsV3
                 CommandlineManager.SetCommandLineArgument(new Flag("-goStraightToMP", String.Empty));
             }
             Manager.StartGame();
+            if (Properties.Settings.Default.QuitAfterGameLaunch)
+            {
+                Environment.Exit(0);
+            }
         }
 
         private void QuickFlagChangeCheckbox_Checked(object sender, RoutedEventArgs e)
@@ -320,11 +332,6 @@ namespace ToolsV3
             {
                 await ShowScriptHookUpToDateDialog();
             }
-        }
-
-        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            CheckScriptHookVersion();
         }
     }
 }

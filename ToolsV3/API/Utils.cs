@@ -35,6 +35,8 @@ namespace ToolsV3
         }
 
         public static string GITHUB_REPO_PAGE_URL = @"https://github.com/Frioo/ToolsV";
+        public static string GTA5MODS_PAGE_URL =
+            @"https://www.gta5-mods.com/tools/toolsv-launcher-mod-manager-toolpack";
 
         public enum LaunchMode
         {

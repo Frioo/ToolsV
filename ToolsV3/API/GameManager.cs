@@ -331,7 +331,7 @@ namespace ToolsV3
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error xdd", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return string.Empty;

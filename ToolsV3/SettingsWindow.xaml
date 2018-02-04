@@ -8,15 +8,16 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="Settings" Height="280" Width="500" Icon="./Resources/favicon.ico" 
-        ShowIconOnTitleBar="False" WindowStartupLocation="CenterScreen" BorderBrush="CornflowerBlue" BorderThickness="1">
+        ShowIconOnTitleBar="False" WindowStartupLocation="CenterScreen" BorderBrush="CornflowerBlue" BorderThickness="1"
+        Closing="SettingsWindow_OnClosing">
     <StackPanel Margin="16">
         <WrapPanel Margin="4">
             <Image Source="./Resources/favicon.ico" Width="32px" Height="32px" VerticalAlignment="Center" Margin="0, 0, 8, 0"></Image>
             <TextBlock FontSize="24" FontFamily="Segoe UI Semilight" VerticalAlignment="Center">ToolsV</TextBlock>
         </WrapPanel>
 
-        <StackPanel Margin="4" VerticalAlignment="Center" IsEnabled="False">
-            <CheckBox x:Name="ScriptHookCheckbox" Margin="0, 4, 0, 4" IsChecked="True"
+        <StackPanel Margin="4" VerticalAlignment="Center" IsEnabled="True">
+            <CheckBox x:Name="ScriptHookCheckbox" Margin="0, 4, 0, 4"
                       Checked="ScriptHookCheckBox_StateChanged" Unchecked="ScriptHookCheckBox_StateChanged">
                 Check ScriptHookV version on startup
             </CheckBox>
@@ -36,7 +37,7 @@
                 View changelog
             </Button>
             <Button x:Name="VisitWebsiteButton" Style="{DynamicResource SquareButtonStyle}" Margin="0, 4, 0, 4"
-                    Click="VisitWebsiteButton_Click"  IsEnabled="False">
+                    Click="VisitWebsiteButton_Click"  IsEnabled="True">
                 Visit website
             </Button>
         </StackPanel>
