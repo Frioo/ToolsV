@@ -86,7 +86,6 @@ namespace ToolsV3
             }
             this.ModStorageFolder = this.InstallFolder + Utils.MOD_STORAGE_FOLDER_ENDPOINT;
 
-            this.IsModded = Directory.Exists(this.InstallFolder) && Directory.Exists(this.InstallFolder + @"\mods") && Directory.GetFiles(this.InstallFolder + @"\mods").Length != 0;
             if (Directory.Exists(this.InstallFolder + Utils.MOD_FOLDER_ENDPOINT))
             {
                 if (GetMods(false).Count > 0)
@@ -274,21 +273,17 @@ namespace ToolsV3
 
         private List<Mod> GetModdedRpfs()
         {
-            if (IsModded)
+            // if no modded RPFs are detected just return an empty list (also occurs when mods folder doesn't exist)
+            if (!IsModded || !Directory.Exists(InstallFolder + Utils.MOD_FOLDER_ENDPOINT)) return new List<Mod>();
+
+            var moddedRpfPaths = Directory.GetFiles(this.InstallFolder + Utils.MOD_FOLDER_ENDPOINT);
+            var moddedRpfList = new List<Mod>();
+            for (int i = 0; i < moddedRpfPaths.Length; i++)
             {
-                var moddedRpfPaths = Directory.GetFiles(this.InstallFolder + @"\mods");
-                var moddedRpfList = new List<Mod>();
-                for (int i = 0; i < moddedRpfPaths.Length; i++)
-                {
-                    var moddedRpf = new Mod(moddedRpfPaths[i], Utils.ModType.RPF, this.InstallFolder, true);
-                    moddedRpfList.Add(moddedRpf);
-                }
-                return moddedRpfList;
+                var moddedRpf = new Mod(moddedRpfPaths[i], Utils.ModType.RPF, this.InstallFolder, true);
+                moddedRpfList.Add(moddedRpf);
             }
-            else
-            {
-                return new List<Mod>();
-            }
+            return moddedRpfList;
         }
         #endregion
 
