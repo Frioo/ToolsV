@@ -4,18 +4,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using ToolsV.Logic.FindGame;
 using ToolsV.Models;
+using VManager.Logic.ModManager;
+using VManager.Resources;
 
 namespace ToolsV
 {
     public class VManager
     {
         public GameInfo GameInfo { get; private set; }
+        public ModManager ModManager { get; private set; }
 
         private VManager()
         {
@@ -28,12 +33,13 @@ namespace ToolsV
             
             if (gameInfo == null)
             {
-                throw new Exception("Failed to find GTA V installation directory.");
+                throw new Exception(Common.FailedToDetectGameInstallation);
             }
 
             var instance = new VManager()
             {
-                GameInfo = gameInfo
+                GameInfo = gameInfo,
+                ModManager = new ModManager(gameInfo),
             };
 
             return instance;
@@ -53,8 +59,31 @@ namespace ToolsV
 
             res.Version = fileInfo.ProductVersion;
             res.Language = fileInfo.Language;
+            res.IsWriteProtected = GetGameWriteProtection(res.Path);
 
             return res;
+        }
+
+        public static bool GetGameWriteProtection(string dir)
+        {
+            var dirInfo = new DirectoryInfo(dir);
+
+            var accessRules = dirInfo
+                .GetAccessControl()
+                .GetAccessRules(true, true, typeof(NTAccount));
+
+            var isReadOnly = dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly);
+            var isWriteProtected = true;
+            
+            foreach (FileSystemAccessRule rule in accessRules)
+            {
+                if (rule.FileSystemRights == FileSystemRights.Write)
+                {
+                    isWriteProtected = false;
+                }
+            }
+
+            return isReadOnly || isWriteProtected;
         }
 
         public static GameInfo? GetGameDirectory()
@@ -94,5 +123,9 @@ namespace ToolsV
 
             return null;
         }
+
+        /**
+         * Mod Management
+         */
     }
 }

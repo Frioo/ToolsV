@@ -9,10 +9,11 @@ namespace ToolsV.Models
     public class GameInfo
     {
         public string? Version { get; set; }
-        public string? Path { get; set; }
+        public string Path { get; set; }
         public string? Language { get; set; }
         public GameEdition Edition { get; set; }
         public bool IsVanilla { get; set; }
+        public bool IsWriteProtected { get; set; }
     }
 
     public enum GameEdition
