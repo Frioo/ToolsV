@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ToolsV3.API;
+using ToolsV.Properties;
 
 namespace ToolsV3
 {
@@ -40,12 +41,12 @@ namespace ToolsV3
 
         private void ScriptHookCheckBox_StateChanged(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.CheckScriptHookOnStartup = ScriptHookCheckbox.IsChecked.Value;
+            Settings.Default.CheckScriptHookOnStartup = ScriptHookCheckbox.IsChecked.Value;
         }
 
         private void AutoCloseCheckBox_StateChanged(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.QuitAfterGameLaunch = (sender as CheckBox).IsChecked.Value;
+            Settings.Default.QuitAfterGameLaunch = (sender as CheckBox).IsChecked.Value;
         }
 
         private void ViewChangelogButton_Click(object sender, RoutedEventArgs e)
@@ -55,14 +56,14 @@ namespace ToolsV3
 
         private void SetCheckBoxStates()
         {
-            this.AutoCloseCheckbox.IsChecked = Properties.Settings.Default.QuitAfterGameLaunch;
-            this.ScriptHookCheckbox.IsChecked = Properties.Settings.Default.CheckScriptHookOnStartup;
+            this.AutoCloseCheckbox.IsChecked = Settings.Default.QuitAfterGameLaunch;
+            this.ScriptHookCheckbox.IsChecked = Settings.Default.CheckScriptHookOnStartup;
         }
 
         private void SettingsWindow_OnClosing(object sender, CancelEventArgs e)
         {
             Utils.Log("SettingsWindow: saving settings...");
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows;
+using ToolsV.Properties;
 
 namespace ToolsV3.API
 {
@@ -15,7 +17,7 @@ namespace ToolsV3.API
         public static void Save()
         {
             Utils.Log("Core: save properties");
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
         }
     }
 }

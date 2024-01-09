@@ -8,7 +8,8 @@ namespace ToolsV3
 {
     public class Mod
     {
-        public string Filename { get; }
+        public string Filename { get; set; }
+        public string Path { get; set; }
         public Utils.ModType Type { get; set; }
         public bool IsEnabled { get; set; }
 
@@ -25,5 +26,7 @@ namespace ToolsV3
             this.Type = type;
             this.IsEnabled = enabled;
         }
+
+
     }
 }

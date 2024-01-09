@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using ToolsV.Properties;
 using ToolsV3.API;
 
 namespace ToolsV3
@@ -30,7 +31,7 @@ namespace ToolsV3
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.CheckScriptHookOnStartup)
+            if (Settings.Default.CheckScriptHookOnStartup)
             {
                 CheckScriptHookVersion();
             }
@@ -263,7 +264,7 @@ namespace ToolsV3
                 CommandlineManager.SetCommandLineArgument(new Flag("-goStraightToMP", String.Empty));
             }
             Manager.StartGame();
-            if (Properties.Settings.Default.QuitAfterGameLaunch)
+            if (Settings.Default.QuitAfterGameLaunch)
             {
                 Environment.Exit(0);
             }
