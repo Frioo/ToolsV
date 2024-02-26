@@ -18,6 +18,10 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+
+            <Style x:Key="StackItem" TargetType="{x:Type Control}">
+                <Setter Property="Margin" Value="0,6,0,0"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Controls:MetroWindow.RightWindowCommands>
@@ -75,9 +79,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -89,34 +91,37 @@
             <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="5" Header="Game info">
                 <DataGrid x:Name="GameInfoDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="True" CanUserResizeColumns="True" CanUserResizeRows="True" IsReadOnly="True"/>
             </GroupBox>
-            <GroupBox Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="5" Header="Launch options">
+            <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Header="Launch options">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="NormalRadio" IsChecked="True" Grid.Row="0" Checked="HandleLaunchModeChange">Normal</RadioButton>
-                    <RadioButton x:Name="SingleplayerWithModsRadio" Grid.Row="1" Checked="HandleLaunchModeChange">Singleplayer (with mods)</RadioButton>
-                    <RadioButton x:Name="SingleplayerNoModsRadio" Grid.Row="2" Checked="HandleLaunchModeChange">Singleplayer (without mods)</RadioButton>
-                    <RadioButton x:Name="OnlineRadio" Grid.Row="3" Checked="HandleLaunchModeChange">Online (without mods)</RadioButton>
 
-                    <CheckBox x:Name="VerifyCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">Verify files</CheckBox>
-                    <CheckBox x:Name="SafeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">Safe mode</CheckBox>
-                    <CheckBox x:Name="SPOfflineCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">Singleplayer offline</CheckBox>
-                    <CheckBox x:Name="MPFreemodeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">Multiplayer freemode</CheckBox>
-                    <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8">
-                        <Hyperlink x:Name="ShowAllFlagsLink" Click="ShowAllFlagsLink_Click">
-                            <TextBlock>Show all flags</TextBlock>
-                        </Hyperlink>
-                    </TextBlock>
-                    <Controls:Tile x:Name="LaunchGameTile" Title="Launch game" Grid.Row="0" Grid.Column="2" Width="200" Height="110" Grid.RowSpan="4" Click="LaunchGameTile_Click"/>
+                    <StackPanel Orientation="Vertical">
+                        <RadioButton Style="{StaticResource StackItem}" x:Name="NormalRadio" IsChecked="True" Grid.Row="0" Checked="HandleLaunchModeChange">Normal</RadioButton>
+                        <RadioButton Style="{StaticResource StackItem}" x:Name="SingleplayerWithModsRadio" Grid.Row="1" Checked="HandleLaunchModeChange">Singleplayer (with mods)</RadioButton>
+                        <RadioButton Style="{StaticResource StackItem}" x:Name="SingleplayerNoModsRadio" Grid.Row="2" Checked="HandleLaunchModeChange">Singleplayer (without mods)</RadioButton>
+                        <RadioButton Style="{StaticResource StackItem}" x:Name="OnlineRadio" Grid.Row="3" Checked="HandleLaunchModeChange">Online (without mods)</RadioButton>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Column="1">
+                        <CheckBox Style="{StaticResource StackItem}" x:Name="VerifyCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">Verify files</CheckBox>
+                        <CheckBox Style="{StaticResource StackItem}" x:Name="SafeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">Safe mode</CheckBox>
+                        <CheckBox Style="{StaticResource StackItem}" x:Name="SPOfflineCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">Singleplayer offline</CheckBox>
+                        <CheckBox Style="{StaticResource StackItem}" x:Name="MPFreemodeCheckbox" Checked="QuickFlagChangeCheckbox_Checked" Unchecked="QuickFlagChangeCheckbox_Checked" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">Multiplayer freemode</CheckBox>
+                        <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8">
+                            <Hyperlink x:Name="ShowAllFlagsLink" Click="ShowAllFlagsLink_Click">
+                                <TextBlock>Show all flags</TextBlock>
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                    <!-- Start button -->
+                    <Controls:Tile x:Name="LaunchGameTile" Title="Launch game" Grid.Column="2" Width="auto" Height="auto" Click="LaunchGameTile_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>
